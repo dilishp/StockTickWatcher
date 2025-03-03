@@ -2,12 +2,12 @@
 #include <process.h>
 
 
-ExecutionManager::ExecutionManager(StockWatcher& sw)
+ExecutionManager::ExecutionManager(DBStore& sw)
 {
 	m_watcher = sw;
 }
 	
-HANDLE ExecutionManager::AssignEvent(int iD, bool bStart)
+HANDLE ExecutionManager::AssignEvent(std::string iD, bool bStart)
 {
 	if (!bStart)
 	{
@@ -37,7 +37,7 @@ HANDLE ExecutionManager::AssignEvent(int iD, bool bStart)
 	}
 }
 
-HANDLE ExecutionManager::AssignExecutor(int iD)
+HANDLE ExecutionManager::AssignExecutor(std::string iD)
 {
 	if (m_ExecutorMap.find(iD) != m_ExecutorMap.end())
 	{
@@ -45,7 +45,7 @@ HANDLE ExecutionManager::AssignExecutor(int iD)
 	}
 	else
 	{
-		HANDLE hThread = (HANDLE)_beginthreadex(NULL, 0, &StockWatcher::OnExecute, &m_watcher, NULL, NULL);
+		HANDLE hThread = (HANDLE)_beginthreadex(NULL, 0, &DBStore::OnExecute, &m_watcher, NULL, NULL);
 		if (!hThread)
 		{
 			fputs("Failed to create thread!\n", stderr);

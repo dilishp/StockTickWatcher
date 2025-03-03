@@ -5,18 +5,18 @@
 class ExecutionManager
 {
 public:
-	ExecutionManager(StockWatcher& sw);
+	ExecutionManager(DBStore& sw);
 	
-	HANDLE AssignEvent(int iD, bool bStart = false);
+	HANDLE AssignEvent(std::string iD, bool bStart = false);
 	
-	HANDLE AssignExecutor(int iD);
+	HANDLE AssignExecutor(std::string iD);
 	
 	void SetContext(ExecutionContext e);
 	
 private:
-	StockWatcher m_watcher;
-	std::unordered_map<int, HANDLE> m_ExecutorMap;
-	std::unordered_map<int, HANDLE> m_EventMap;
-	std::unordered_map<int, HANDLE> m_SEventMap;
+	DBStore m_watcher;
+	std::unordered_map<std::string, HANDLE> m_ExecutorMap;
+	std::unordered_map<std::string, HANDLE> m_EventMap;
+	std::unordered_map<std::string, HANDLE> m_SEventMap;
 };
 

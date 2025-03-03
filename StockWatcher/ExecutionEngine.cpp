@@ -9,13 +9,14 @@
 #include "DBStore.h"
 #include "ExecutionContext.h"
 #include "ExecutionManager.h"
+#include <curl/curl.h>
 
 using namespace std;
 
 class ExecutionEngine
 {
 public:
-	ExecutionEngine(StockWatcher& sw)
+	ExecutionEngine(DBStore& sw)
 	{
 		em = new ExecutionManager(sw);
 	}
@@ -27,15 +28,15 @@ public:
 	void SetContext(ExecutionContext executionContext)
 	{
 		//Context set is called
-		executionContext.m_handle = em->AssignExecutor(executionContext.m_StockID);
-		executionContext.m_hEvent = em->AssignEvent(executionContext.m_StockID);
-		executionContext.m_hStartEvent = em->AssignEvent(executionContext.m_StockID,true);
+		executionContext.m_handle = em->AssignExecutor(executionContext.m_stockTicker);
+		executionContext.m_hEvent = em->AssignEvent(executionContext.m_stockTicker);
+		executionContext.m_hStartEvent = em->AssignEvent(executionContext.m_stockTicker,true);
 		em->SetContext(executionContext);
 	}
 
 	void Analyze(ExecutionContext t)
 	{
-		cout << "\nAnalysing Stock : " << t.m_StockID;
+		cout << "\nAnalysing Stock : " << t.m_stockTicker;
 	}
 
 	void Execute()
@@ -59,20 +60,34 @@ int main()
 {
 	std::vector<ExecutionContext> vContexts =
 	{
-		{1},{2},{3},{4},{5}
+		ExecutionContext("AAPL",12.5,18,24,10.3),
+		ExecutionContext("BPL",102.5,180,240,100.3),
+		ExecutionContext("KLAC",112.5,118,214,110.3),
+		ExecutionContext("NVD",122.5,128,224,120.3),
+		ExecutionContext("PIND",132.5,138,234,130.3),
+		ExecutionContext("JFN",142.5,148,244,140.3),
+		ExecutionContext("JSN",142.5,148,244,140.3),
+		ExecutionContext("RDH",142.5,148,244,140.3)
 	};
 
-	StockWatcher sw;
+	// Initialize libcurl once.
+	curl_global_init(CURL_GLOBAL_ALL);
+
+	DBStore sw;
 	ExecutionEngine e(sw);
 	for (size_t i = 0; i < vContexts.size(); i++)
 	{
 		e.SetContext(vContexts[i]);
+		Sleep(1000);
 	}
 
 	for (size_t i = 0; i < vContexts.size(); i++)
 	{
 		e.SetContext(vContexts[i]);
+		Sleep(1000);
 	}
+
+	curl_global_cleanup();
 	char ch;
 	cin >> ch;
 	return 0;
